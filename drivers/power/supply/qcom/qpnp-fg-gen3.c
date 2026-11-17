@@ -3833,8 +3833,19 @@ static int fg_psy_get_property(struct power_supply *psy,
 	case POWER_SUPPLY_PROP_VOLTAGE_NOW:
 		if (fg->battery_missing)
 			pval->intval = 3700000;
-		else
+		else {
+			/*
+			 * A failed SPMI read must not reach healthd as 0 mV
+			 * (BatteryService shuts down); report the last good one.
+			 */
 			rc = fg_get_battery_voltage(fg, &pval->intval);
+			if (!rc)
+				fg->last_valid_vbatt_uv = pval->intval;
+			else if (fg->last_valid_vbatt_uv > 0) {
+				pval->intval = fg->last_valid_vbatt_uv;
+				rc = 0;
+			}
+		}
 		break;
 	case POWER_SUPPLY_PROP_CURRENT_NOW:
 		rc = fg_get_battery_current(fg, &pval->intval);
