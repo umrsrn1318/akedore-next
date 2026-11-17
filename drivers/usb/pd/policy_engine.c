@@ -4699,8 +4699,10 @@ void usbpd_vbus_sm(struct work_struct *w)
 	pr_err("usbpd_vbus_sm handle state %s, vbus %d\n",
 			usbpd_state_strings[pd->current_state],pd->vbus_enabled);
 
-	/* to be done, pd->sm_queued = false; */
 	pd_vbus_reset(pd);
+	/* drop the hold from kick_usbpd_vbus_sm() unless usbpd_sm owns one */
+	if (!pd->sm_queued)
+		pm_relax(&pd->dev);
 }
 
 void kick_usbpd_vbus_sm(void)
