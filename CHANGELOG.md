@@ -1,4 +1,4 @@
-# AKEDORE kernel 4.19 — CHANGELOG
+# AKEDORE Next kernel 4.19 — CHANGELOG
 
 POCO F1 (beryllium / SDM845). Base: **Aozora 4.19** by Kaiyaa77 (Linux
 4.19.325, CLO cip135-st19). Everything below is on top of that base.
@@ -15,6 +15,22 @@ KernelSU manager v3.3.1 (32704)**. TEST1.x used KernelSU-Next 33219 + SUSFS
 Two builds from one source: **KSU** (`CONFIG_KSU=y`) and **NonKSU** (no root).
 
 ---
+
+## AKEDORE Next v1 (20261117)
+
+- **Name**: the kernel is now **AKEDORE Next**. uname reads
+  `5.10.245-akedore-next-v1-KSU-SUSFS` (`-KSU`, `-NonKSU`). Same 5.10.245
+  spoof as before (see below); the real kernel is 4.19.325.
+- **USB PD**: release the wakeup hold taken by `kick_usbpd_vbus_sm()` when
+  `usbpd_vbus_sm()` is done (unless `usbpd_sm` owns it). Before, an OTG VBUS
+  reset could keep the phone awake. Reported in Abdelrahman-Muhammad a94e7a7e.
+- **Fuel gauge**: `voltage_now` returns the last good value when a register
+  read fails, instead of an error that healthd reads as 0 mV (possible
+  shutdown). Internal FG logic still sees the real result. Idea from
+  Abdelrahman-Muhammad de88c67a.
+- Checked against duckyduckG 4.19 `perf` (RisingOS-Revived 8.1.1 base) vs
+  `lineage-23.2_xiaomi`: the fuel gauge code is the same for beryllium (only
+  `#ifdef` moves), so the battery % issue is not from that change.
 
 ## 20261108 - 20261109 (v1)
 

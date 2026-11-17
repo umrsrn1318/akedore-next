@@ -1,5 +1,5 @@
 #!/bin/bash
-# build_akedore.sh [ksu|nosu] - build AKEDORE kernel for POCO F1 (beryllium).
+# build_akedore.sh [ksu|nosu] - build AKEDORE Next kernel for POCO F1 (beryllium).
 # EDITION=AutoBoost: GPU game boost (710 -> 802 MHz) on by default; empty = Standard (710 MHz, boost off).
 # PROFILE=std (default: GPU 710 MHz, all thermal zones) or PROFILE=oc (GPU 802 MHz, relaxed thermal).
 # Needs an LLVM/clang toolchain (tested: Neutron clang 24) in $CLANG_DIR/bin, plus aarch64/arm GNU binutils prefixes.
@@ -16,11 +16,11 @@ M="make -C $S -j$(nproc) O=$O ARCH=arm64 SUBARCH=arm64 LLVM=1 LLVM_IAS=1 CC=clan
 export KCFLAGS="-Wno-error"
 $M beryllium_defconfig
 if [ $VARIANT = ksu ]; then
-  # backslashxx/KernelSU 32704 (official-compatible): source hooks + LSM hooks, no kprobes / branch-link / syscall-table tricks
-  "$S/scripts/config" --file "$S/$O/.config" --set-str LOCALVERSION "-akedore-umrsrn-v1$ED-KSU" $AB FSOCIETY_GPU_AUTOBOOST -e KSU -e KSU_LSM_SECURITY_HOOKS \
+  # ReSukiSU v4.2.0-rc3 (KernelSU submodule), manual hooks; SUSFS build: -d KSU_MANUAL_HOOK -e KSU_SUSFS
+  "$S/scripts/config" --file "$S/$O/.config" --set-str LOCALVERSION "-akedore-next-v1$ED-KSU" $AB FSOCIETY_GPU_AUTOBOOST -e KSU -e KSU_MANUAL_HOOK -d KSU_SUSFS \
     -d KSU_KPROBES_KSUD -d KSU_HACK_ARM64_BRANCH_LINK -d KSU_TAMPER_SYSCALL_TABLE
 else
-  "$S/scripts/config" --file "$S/$O/.config" --set-str LOCALVERSION "-akedore-umrsrn-v1$ED-NonKSU" $AB FSOCIETY_GPU_AUTOBOOST -d KSU
+  "$S/scripts/config" --file "$S/$O/.config" --set-str LOCALVERSION "-akedore-next-v1$ED-NonKSU" $AB FSOCIETY_GPU_AUTOBOOST -d KSU
 fi
 $M olddefconfig
 $M

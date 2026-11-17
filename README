@@ -1,5 +1,5 @@
-AKEDORE kernel 4.19 for POCO F1 (beryllium)
-===========================================
+AKEDORE Next kernel 4.19 for POCO F1 (beryllium)
+================================================
 
   Custom Linux 4.19.325 kernel for the POCO F1, for 4.19 ROMs.
   Based on Aozora 4.19 by Kaiyaa77. Formerly "fsociety kernel".
@@ -15,9 +15,9 @@ Builds
   Standard   GPU stock 710 MHz
   AutoBoost  GPU 710 MHz, boosted to 802 MHz while gaming
 
-  Latest source: v1, branch akedore. The GitHub release page still has
-  the 20261105 zips (AKEDORE-4.19-<KSU|NoSU>-<Standard|AutoBoost>-*.zip).
-  v1 test zips (KSU-SUSFS, KSU, NoSU) are shared in the Telegram group.
+  Latest source: AKEDORE Next v1, branch akedore-next.
+  Zips: AKEDORE-Next-4.19-<NoSU|ReSukiSU|ReSukiSU-SUSFS>-v1.zip
+  (older AKEDORE v1 zips: AKEDORE-4.19-*-v1.zip).
 
   Tested on: OxygenOS 16 port (A16), PixelOS 17 and RestOS 17 (A17),
   Infinity-X 4.1 (A17).
@@ -25,7 +25,7 @@ Builds
 Version name (why it says 5.10.245)
 -----------------------------------
 
-  uname shows 5.10.245-akedore-v1-KSU, but this is a 4.19 kernel.
+  uname shows 5.10.245-akedore-next-v1-KSU, but this is a 4.19 kernel.
   The real base is Linux 4.19.325. The 5.10.245 text comes from Aozora:
   its top Makefile sets KERNELVERSION = 5.10.245 (commit 1caca3f39a19
   by Kaiyaa77, "Makefile: spoof KERNELVERSION string to 5.10.245").
