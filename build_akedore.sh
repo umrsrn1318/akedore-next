@@ -3,6 +3,7 @@
 # EDITION=AutoBoost: GPU game boost (710 -> 802 MHz) on by default; empty = Standard (710 MHz, boost off).
 # PROFILE=std (default: GPU 710 MHz, all thermal zones) or PROFILE=oc (GPU 802 MHz, relaxed thermal).
 # Needs an LLVM/clang toolchain (tested: Neutron clang 24) in $CLANG_DIR/bin, plus aarch64/arm GNU binutils prefixes.
+# PERF=1 (ksu only): SUSFS build with a stock-looking uname "-perf+ (builder@localhost)" for apps that read the kernel name.
 # Output: out[-nosu]/arch/arm64/boot/Image.gz-dtb (flash with AnyKernel3).
 set -e
 VARIANT=${1:-ksu}; S=$(cd "$(dirname "$0")" && pwd)
@@ -14,10 +15,12 @@ case $PROFILE in std) DTCF= ;; oc) DTCF=-DFSOCIETY_OC; O=$O-oc ;; *) echo "PROFI
 [ $VARIANT = ksu ] && [ ! -f "$S/KernelSU/kernel/Makefile" ] && git -C "$S" submodule update --init
 M="make -C $S -j$(nproc) O=$O ARCH=arm64 SUBARCH=arm64 LLVM=1 LLVM_IAS=1 CC=clang LD=ld.lld AR=llvm-ar NM=llvm-nm HOSTCC=gcc HOSTCXX=g++ OBJCOPY=llvm-objcopy OBJDUMP=llvm-objdump STRIP=llvm-strip CROSS_COMPILE=aarch64-linux-gnu- CROSS_COMPILE_ARM32=arm-linux-gnueabi- CLANG_TRIPLE=aarch64-linux-gnu- FSOCIETY_DTC_CPP_FLAGS=$DTCF"
 export KCFLAGS="-Wno-error"
+LV="-akedore-next-v1$ED-KSU"; HK="-e KSU_MANUAL_HOOK -d KSU_SUSFS"
+[ -n "$PERF" ] && { LV=-perf+; HK="-d KSU_MANUAL_HOOK -e KSU_SUSFS"; export KBUILD_BUILD_USER=builder KBUILD_BUILD_HOST=localhost; }
 $M beryllium_defconfig
 if [ $VARIANT = ksu ]; then
   # ReSukiSU v4.2.0-rc3 (KernelSU submodule), manual hooks; SUSFS build: -d KSU_MANUAL_HOOK -e KSU_SUSFS
-  "$S/scripts/config" --file "$S/$O/.config" --set-str LOCALVERSION "-akedore-next-v1$ED-KSU" $AB FSOCIETY_GPU_AUTOBOOST -e KSU -e KSU_MANUAL_HOOK -d KSU_SUSFS \
+  "$S/scripts/config" --file "$S/$O/.config" --set-str LOCALVERSION "$LV" $AB FSOCIETY_GPU_AUTOBOOST -e KSU $HK \
     -d KSU_KPROBES_KSUD -d KSU_HACK_ARM64_BRANCH_LINK -d KSU_TAMPER_SYSCALL_TABLE
 else
   "$S/scripts/config" --file "$S/$O/.config" --set-str LOCALVERSION "-akedore-next-v1$ED-NonKSU" $AB FSOCIETY_GPU_AUTOBOOST -d KSU
